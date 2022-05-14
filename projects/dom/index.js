@@ -27,7 +27,7 @@ function createDivWithText(text) {
    prepend(document.querySelector('#one'), document.querySelector('#two')) // добавит элемент переданный первым аргументом в начало элемента переданного вторым аргументом
  */
 function prepend(what, where) {
-  where.prepend(what, where.firstChild);
+  where.prepend(what);
 }
 
 /*
@@ -84,7 +84,7 @@ function findError(where) {
   const result = [];
  
   for (const child of where.children) {
-      result.push(child.innerText);
+      result.push(child.textContent);
   }
 
 return result;
@@ -104,10 +104,14 @@ return result;
    должно быть преобразовано в <div></div><p></p>
  */
 function deleteTextNodes(where) {
-  for (const child of where.childNodes) {
-    if (child.nodeType === 3) {
-      child.parentNode.removeChild(child);
+  for (let i = 0; i < where.childNodes.length; i++) {
+    const element = where.childNodes[i];
+
+    if (element.nodeType === Element.TEXT_NODE) {
+      where.removeChild(element);
+      i--;
     }
+    
   }
 }
 
@@ -124,10 +128,10 @@ function deleteTextNodes(where) {
  */
 function deleteTextNodesRecursive(where) {
   for (const child of [...where.childNodes]) {
-    if (child.nodeType === 3) {
+    if (child.nodeType === Element.TEXT_NODE) {
       child.parentNode.removeChild(child);
  
-    } else if (child.nodeType === 1) {
+    } else if (child.nodeType === Element.ELEMENT_NODE) {
       deleteTextNodesRecursive(child);
  
     }
@@ -155,7 +159,40 @@ function deleteTextNodesRecursive(where) {
      texts: 3
    }
  */
-function collectDOMStat(root) {}
+function collectDOMStat(root) {
+  const stat = {
+    tags: {},
+    classes: {},
+    texts: 0,
+  };
+
+  function scan(root) {
+    for (const child of root.childNodes) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        stat.texts++;
+      } else if (child.nodeType === Node.ELEMENT_NODE) {
+        if (child.tagName in stat.tags) {
+          stat.tags[child.tagName]++;
+        } else {
+          stat.tags[child.tagName] = 1;
+        }
+
+        for (const className of child.classList) {
+          if (className in stat.classes) {
+            stat.classes[className]++;
+          } else {
+            stat.classes[className] = 1;
+          }
+        }
+
+        scan(child);
+      }
+    }
+  }
+  scan(root);
+
+  return stat;
+}
 
 /*
  Задание 8 *:
@@ -189,7 +226,21 @@ function collectDOMStat(root) {}
      nodes: [div]
    }
  */
-function observeChildNodes(where, fn) {}
+function observeChildNodes(where, fn) {
+  const observer = new MutationObserver((mutations) =>{
+    mutations.forEach((mutation) => {
+      if (mutation.type === 'childList') {
+        fn ({
+          type: mutation.addedNodes.length ? 'insert' : 'remove',
+          nodes: [
+            ...(mutation.addedNodes.length ? mutation.addedNodes : mutation.removedNodes),
+          ],
+        });
+      }
+    });
+  });
+  observer.observe(where, {childList: true, subtree: true});
+}
 
 export {
   createDivWithText,
