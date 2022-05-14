@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* ДЗ 5 - Асинхронность и работа с сетью */
 
 /*
@@ -8,8 +9,14 @@
  Пример:
    delayPromise(3) // вернет promise, который будет разрешен через 3 секунды
  */
-function delayPromise(seconds) {}
-
+function delayPromise(seconds) {
+  return new Promise ((resolve) => {
+    setTimeout (() => {
+      resolve()
+    }, seconds)
+  });
+}
+delayPromise(3000)
 /*
  Задание 2:
 
@@ -23,6 +30,20 @@ function delayPromise(seconds) {}
  Пример:
    loadAndSortTowns().then(towns => console.log(towns)) // должна вывести в консоль отсортированный массив городов
  */
-function loadAndSortTowns() {}
+function loadAndSortTowns() {
+  return new Promise(function (resolve, reject) {
+    fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+        .then(resp => {
+            return resp.json();
+        })
+        .then(towns => {
+            const sortTowns = towns.sort((a, b) => {
+            return a.name > b.name ? 1 : -1;
+        })
+        resolve(sortTowns);
+        })
+        .catch((e) => reject(e));
+})
+}
 
 export { delayPromise, loadAndSortTowns };
