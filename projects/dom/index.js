@@ -52,15 +52,12 @@ function prepend(what, where) {
 function findAllPSiblings(where) {
   const siblingsp = [];
   for (const element of where.children) {
- 
-    if (element.nextElementSibling && element.nextElementSibling.tagName === 'P' ) {      
+    if (element.nextElementSibling && element.nextElementSibling.tagName === 'P') {
       siblingsp.push(element);
     }
- 
   }
-  
+
   return siblingsp;
- 
 }
 
 /*
@@ -82,13 +79,12 @@ function findAllPSiblings(where) {
  */
 function findError(where) {
   const result = [];
- 
+
   for (const child of where.children) {
-      result.push(child.textContent);
+    result.push(child.textContent);
   }
 
-return result;
-
+  return result;
 }
 
 /*
@@ -111,7 +107,6 @@ function deleteTextNodes(where) {
       where.removeChild(element);
       i--;
     }
-    
   }
 }
 
@@ -129,15 +124,12 @@ function deleteTextNodes(where) {
 function deleteTextNodesRecursive(where) {
   for (const child of [...where.childNodes]) {
     if (child.nodeType === Element.TEXT_NODE) {
-      child.parentNode.removeChild(child);
- 
+      where.removeChild(child);
     } else if (child.nodeType === Element.ELEMENT_NODE) {
       deleteTextNodesRecursive(child);
- 
     }
   }
 }
-
 
 /*
  Задание 7 *:
@@ -227,10 +219,10 @@ function collectDOMStat(root) {
    }
  */
 function observeChildNodes(where, fn) {
-  const observer = new MutationObserver((mutations) =>{
+  const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.type === 'childList') {
-        fn ({
+        fn({
           type: mutation.addedNodes.length ? 'insert' : 'remove',
           nodes: [
             ...(mutation.addedNodes.length ? mutation.addedNodes : mutation.removedNodes),
@@ -239,7 +231,7 @@ function observeChildNodes(where, fn) {
       }
     });
   });
-  observer.observe(where, {childList: true, subtree: true});
+  observer.observe(where, { childList: true, subtree: true });
 }
 
 export {
