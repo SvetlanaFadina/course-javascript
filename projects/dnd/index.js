@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* Задание со звездочкой */
 
 /*
@@ -21,7 +22,36 @@ const homeworkContainer = document.querySelector('#app');
 
 document.addEventListener('mousemove', (e) => {});
 
-export function createDiv() {}
+function get_random_color() {
+  return "#"+((1<<24)*Math.random()|0).toString(16);
+}
+
+function getRandomInteger(min, max) {
+  let result = min - 0.5 + Math.random() * (max - min + 1);
+
+  result = Math.round(result);
+
+  return result;
+}
+
+function createDiv() {
+  const result = document.createElement('div');
+
+    result.className = 'draggable-div';
+    result.style.backgroundColor = get_random_color();
+    result.style.top = getRandomInteger(10, 100) + 'px';
+    result.style.left = getRandomInteger(10, 100) + 'px';
+    result.style.width = getRandomInteger(10, 100) + 'px';
+    result.style.height = getRandomInteger(10, 100) + 'px';
+    result.style.position = 'absolute';
+
+    result.style.cursor = 'pointer';
+
+    result.draggable = true; 
+
+    return result;
+}
+
 
 const addDivButton = homeworkContainer.querySelector('#addDiv');
 
