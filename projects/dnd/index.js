@@ -34,7 +34,7 @@ function getRandomInteger(min, max) {
   return result;
 }
 
-function createDiv() {
+export function createDiv() {
   const result = document.createElement('div');
 
     result.className = 'draggable-div';
