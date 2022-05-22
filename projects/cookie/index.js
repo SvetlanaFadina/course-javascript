@@ -117,7 +117,7 @@ function updateTable() {
     const removeTD = document.createElement('td');
     const removeButton = document.createElement('button');
 
-    removeButton.dataset.role = 'remove cookie';
+    removeButton.dataset.role = 'remove-cookie';
     removeButton.dataset.cookieName = name;
     removeButton.textContent = 'Удалить';
     nameTD.textContent = name;
