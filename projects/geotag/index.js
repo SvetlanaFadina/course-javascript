@@ -4,10 +4,10 @@
 /* eslint-disable no-undef */
 /* eslint-disable prettier/prettier */
 import './index.html';
-import './index.css'
+import './index.css';
 import { formTemplate } from './templates';
 
-let clusterer
+let clusterer;
 
 document.addEventListener('DOMContentLoaded', () => {
   ymaps.ready(init);
@@ -26,21 +26,25 @@ document.addEventListener('DOMContentLoaded', () => {
     clusterer = new ymaps.Clusterer({ clusterDisableClickZoom: true });
     clusterer.options.set('hasBalloon', false);
 
-    getGeoObjects(myMap)
-    clusterer.events.add('click', function(e) {
-      //Получаем текущие плейсмарки (они же геообъекты) в кластере по которому кликнули в зависимости от зума
-      const geoObjectsInCluster = e.get('target').getGeoObjects()
-      openBalloon(myMap, e.get('coords'), geoObjectsInCluster)
-    })
-
+    getGeoObjects(myMap);
+    clusterer.events.add('click', function (e) {
+      const geoObjectsInCluster = e.get('target').getGeoObjects();
+      openBalloon(myMap, e.get('coords'), geoObjectsInCluster);
+    });
   }
 });
 
 function getReviewList(currentGeoObjects) {
   let reviewListHTML = '';
-  
+
   for (const review of getReviewsFromLS()) {
-    if (currentGeoObjects.some(geoObject => JSON.stringify(geoObject.geometry._coordinates) === JSON.stringify(review.coords))) {
+    if (
+      currentGeoObjects.some(
+        (geoObject) =>
+          JSON.stringify(geoObject.geometry._coordinates) ===
+          JSON.stringify(review.coords)
+      )
+    ) {
       reviewListHTML += `
         <div class="review">
           <div><strong>Место: </strong>${review.place}</div>
@@ -54,29 +58,30 @@ function getReviewList(currentGeoObjects) {
 }
 
 function getReviewsFromLS() {
-  const reviews = localStorage.reviews
-  return JSON.parse(reviews || "[]")
+  const reviews = localStorage.reviews;
+  return JSON.parse(reviews || '[]');
 }
 
 function getGeoObjects(map) {
-  const geoObjects = []
+  const geoObjects = [];
   for (const review of getReviewsFromLS() || []) {
     const placemark = new ymaps.Placemark(review.coords);
-    placemark.events.add('click', e => {
-      openBalloon(map, e.get('coords'), [e.get('target')])
-    })
+    placemark.events.add('click', (e) => {
+      openBalloon(map, e.get('coords'), [e.get('target')]);
+    });
     geoObjects.push(placemark);
   }
 
-  clusterer.removeAll()
-  map.geoObjects.remove(clusterer)
-  clusterer.add(geoObjects)
-  map.geoObjects.add(clusterer)
+  clusterer.removeAll();
+  map.geoObjects.remove(clusterer);
+  clusterer.add(geoObjects);
+  map.geoObjects.add(clusterer);
 }
 
 async function openBalloon(map, coords, currentGeoObjects) {
   await map.balloon.open(coords, {
-    content: `<div class="reviews">${getReviewList(currentGeoObjects)}</div>` + formTemplate,
+    content:
+      `<div class="reviews">${getReviewList(currentGeoObjects)}</div>` + formTemplate,
   });
   document.querySelector('#add-form').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -87,9 +92,9 @@ async function openBalloon(map, coords, currentGeoObjects) {
       reviewText: this.elements.review.value,
     };
 
-    localStorage.reviews = JSON.stringify([...getReviewsFromLS(), review])
+    localStorage.reviews = JSON.stringify([...getReviewsFromLS(), review]);
 
-    getGeoObjects(map)
+    getGeoObjects(map);
 
     map.balloon.close();
   });
